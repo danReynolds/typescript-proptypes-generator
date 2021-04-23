@@ -110,11 +110,13 @@ export function parseFromProgram(
 	function visit(node: ts.Node) {
 		if (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node)) {
 			var type = checker.getTypeAtLocation(node.name);
-			try {
-				parsePropsType(node.name.getText(), type);
-			} catch(e) {
-				if (parserOptions.verbose) {
-					console.log(`Failed to parse ${node.name.getText()}: ${e}`);
+			if (!type.isLiteral() && !type.isUnion()) {
+				try {
+					parsePropsType(node.name.getText(), type);
+				} catch(e) {
+					if (parserOptions.verbose) {
+						console.log(`Failed to parse ${node.name.getText()}: ${e}`);
+					}
 				}
 			}
 		}
